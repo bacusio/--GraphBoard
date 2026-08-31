@@ -1,0 +1,24 @@
+﻿--- 2026-08-31T07:47:44.0070788+08:00 ---
+Method: ShellExecute
+Exception: System.InvalidOperationException
+Message: Simulated ShellExecute failure.
+URL: http://127.0.0.1:7926/
+StackTrace:    在 GraphBoard.Program.TryOpenBrowser(String url, Boolean forceFailure)
+--- 2026-08-31T07:47:44.0150788+08:00 ---
+Method: ExplorerFallback
+Exception: System.InvalidOperationException
+Message: Simulated Explorer fallback failure.
+URL: http://127.0.0.1:7926/
+StackTrace:    在 GraphBoard.Program.TryOpenBrowser(String url, Boolean forceFailure)
+--- 2026-08-31T07:50:11.5894725+08:00 ---
+Method: ShellExecute
+Exception: System.InvalidOperationException
+Message: Simulated ShellExecute failure.
+URL: http://127.0.0.1:13745/
+StackTrace:    在 GraphBoard.Program.TryOpenBrowser(String url, Boolean forceFailure)
+--- 2026-08-31T07:50:11.5974742+08:00 ---
+Method: ExplorerFallback
+Exception: System.InvalidOperationException
+Message: Simulated Explorer fallback failure.
+URL: http://127.0.0.1:13745/
+StackTrace:    在 GraphBoard.Program.TryOpenBrowser(String url, Boolean forceFailure)

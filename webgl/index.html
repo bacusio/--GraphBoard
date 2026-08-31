@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff8fc">
+  <title>关系图谱白板</title>
+  <link rel="stylesheet" href="styles.css?v=0.4.0-webgl">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">关系</span>
+      <div>
+        <strong>关系图谱白板</strong>
+        <span id="projectStatus">未保存</span>
+      </div>
+    </div>
+    <label class="project-title-label">
+      <span>项目</span>
+      <input id="projectTitle" value="未命名关系图" maxlength="80">
+    </label>
+    <label class="top-time-picker" title="当前时间切片">
+      <span>时期</span>
+      <select id="timeSliceSelect"></select>
+    </label>
+    <nav class="top-actions" aria-label="项目操作">
+      <button id="undoButton" title="撤销 Ctrl+Z" disabled>撤销</button>
+      <button id="redoButton" title="重做 Ctrl+Y" disabled>重做</button>
+      <button id="saveButton">保存项目</button>
+      <button id="openButton">打开项目</button>
+      <button id="exportButton" class="primary">导出 PNG</button>
+    </nav>
+  </header>
+
+  <main class="workspace">
+    <aside class="toolbox" aria-label="工具箱">
+      <button class="tool active" data-tool="select" title="选择与移动">
+        <span class="tool-icon">↖</span><span>选择</span>
+      </button>
+      <button class="tool" data-tool="connect" title="连续建立关系">
+        <span class="tool-icon">↗</span><span>关系</span>
+      </button>
+      <button id="importButton" class="tool" title="导入一个或多个头像">
+        <span class="tool-icon">＋</span><span>导入</span>
+      </button>
+      <button id="addGroupButton" class="tool" title="新增阵营区域">
+        <span class="tool-icon">▣</span><span>阵营</span>
+      </button>
+      <button id="addTriangleButton" class="tool" title="新增三角形事件/对象">
+        <span class="tool-icon">△</span><span>三角对象</span>
+      </button>
+      <button id="layoutButton" class="tool" title="对全部对象进行基础网格排版">
+        <span class="tool-icon">⌗</span><span>排版</span>
+      </button>
+      <label class="layout-picker" title="选择排版策略">
+        <span>方式</span>
+        <select id="layoutMode">
+          <option value="groups">按阵营对齐</option>
+          <option value="layers">按范畴层次</option>
+          <option value="center">以选中对象为中心</option>
+          <option value="tidy">保持手工布局</option>
+        </select>
+      </label>
+      <button id="fitButton" class="tool" title="显示全部内容">
+        <span class="tool-icon">⊙</span><span>全览</span>
+      </button>
+      <div class="toolbox-spacer"></div>
+      <div class="zoom-readout" id="zoomReadout">100%</div>
+      <div class="snap-state" id="snapState">磁吸开启</div>
+    </aside>
+
+    <section class="canvas-shell" id="canvasShell">
+      <svg id="canvas" role="application" aria-label="关系图谱画布">
+        <defs id="canvasDefs">
+          <pattern id="gridPattern" width="24" height="24" patternUnits="userSpaceOnUse">
+            <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#f1e9ef" stroke-width="1"/>
+          </pattern>
+          <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#4b3042" flood-opacity="0.16"/>
+          </filter>
+        </defs>
+        <rect id="grid" width="100%" height="100%" fill="url(#gridPattern)"/>
+        <g id="world">
+          <g id="groupLayer"></g>
+          <g id="edgeLayer"></g>
+          <g id="previewLayer"></g>
+          <g id="nodeLayer"></g>
+        </g>
+      </svg>
+      <div class="empty-state" id="emptyState">
+        <div class="empty-visual">◎—◎</div>
+        <h1>把图片拖进来，开始整理关系</h1>
+        <p>批量导入头像，拖动卡片排版；从头像边缘的小圆点拖出关系。</p>
+        <button id="emptyImportButton" class="primary">导入头像</button>
+      </div>
+      <div class="connection-toast" id="connectionToast" hidden></div>
+      <section class="example-dock" aria-label="关系图示例">
+        <span class="example-dock-title">示例</span>
+        <button data-example="company">公司协作</button>
+        <button data-example="characters">人物关系</button>
+        <button data-example="academic">学术谱系</button>
+        <button data-example="supply">供应链</button>
+        <button data-example="knowledge">知识体系</button>
+        <button data-example="software">软件依赖</button>
+        <button data-example="workflow">工作流程</button>
+        <button data-example="mapping">分类映射</button>
+      </section>
+    </section>
+
+    <aside class="inspector" id="inspector">
+      <div class="inspector-empty" id="inspectorEmpty">
+        <h2>属性</h2>
+        <p>选中对象、关系或阵营后，可在这里修改。</p>
+        <div class="tips">
+          <strong>快速操作</strong>
+          <span>滚轮：缩放画布</span>
+          <span>空白处拖动：平移画布</span>
+          <span>Alt：临时关闭磁吸</span>
+          <span>Delete：删除选择</span>
+        </div>
+      </div>
+      <form id="nodeInspector" class="inspector-form" hidden>
+        <h2>对象卡片</h2>
+        <label>名称<input id="nodeName" maxlength="80"></label>
+        <label>边框颜色<input id="nodeColor" type="color"></label>
+        <label>阵营<select id="nodeGroup"></select></label>
+        <label>备注<textarea id="nodeNote" rows="4" maxlength="500"></textarea></label>
+        <button type="button" id="replaceImageButton">替换图片</button>
+        <button type="button" class="danger" data-delete-selection>删除对象</button>
+      </form>
+      <form id="edgeInspector" class="inspector-form" hidden>
+        <h2>关系</h2>
+        <label>标签<input id="edgeLabel" maxlength="80"></label>
+        <label>方向
+          <select id="edgeDirection">
+            <option value="forward">单向 →</option>
+            <option value="none">无向 —</option>
+            <option value="both">双向 ↔</option>
+          </select>
+        </label>
+        <label>颜色<input id="edgeColor" type="color"></label>
+        <label>线型
+          <select id="edgeStyle">
+            <option value="solid">实线</option>
+            <option value="dashed">虚线</option>
+            <option value="dotted">点线</option>
+          </select>
+        </label>
+        <div class="inline-actions">
+          <button type="button" id="reverseEdgeButton">反转方向</button>
+          <button type="button" id="reconnectEdgeButton">重新连接终点</button>
+        </div>
+        <button type="button" class="danger" data-delete-selection>删除关系</button>
+      </form>
+      <form id="groupInspector" class="inspector-form" hidden>
+        <h2>阵营</h2>
+        <label>名称<input id="groupName" maxlength="80"></label>
+        <label>颜色<input id="groupColor" type="color"></label>
+        <button type="button" class="danger" data-delete-selection>删除阵营</button>
+      </form>
+    </aside>
+  </main>
+
+  <footer class="statusbar">
+    <span id="objectCount">0 个对象</span>
+    <span id="relationCount">0 条关系</span>
+    <span id="groupCount">0 个阵营</span>
+    <span class="status-help" id="statusHelp">提示：将图片直接拖入画布即可批量导入</span>
+  </footer>
+
+  <input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>
+  <input id="replaceImageInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+  <input id="projectInput" type="file" accept="application/json,.graphboard.json" hidden>
+  <script src="app.js?v=0.5.1"></script>
+  <script src="webgl-background.js"></script>
+</body>
+</html>
