@@ -1,0 +1,85 @@
+# GraphBoard v0.4.0
+
+GraphBoard is a local-first relationship whiteboard for people, teams, projects, concepts, workflows, and other generic objects. It imports images, connects cards with magnetic relations, supports time slices, triangle event objects, grouping, layout, project save/open, and PNG export.
+
+## Packages
+
+- `windows-delivery/` — validated portable Windows launcher. Double-click `GraphBoard.exe` and keep the launcher window open.
+- `web/` — static web deployment. Serve this folder from any static web host or open `index.html` directly for basic testing.
+- `webgl/` — WebGL-enhanced deployment. WebGL renders the background grid while the existing SVG layer preserves the tested editing interactions.
+- `docs/使用说明.zh-CN.md` — Chinese user guide.
+- `docs/UserGuide.en.md` — English user guide.
+- `examples/` — eight PNG examples covering the supported application areas.
+- `examples-en/` — the same eight examples with English titles, groups, objects, and relation labels.
+
+## Local privacy
+
+Project data is processed locally in the browser. The launcher binds only to `127.0.0.1`; it does not upload images or require an account.
+
+## Browser support
+
+Use a current Edge, Chrome, Firefox, or Safari. WebGL is optional for the standard web package and required only for the WebGL-enhanced background.
+
+## Current scope
+
+This release is the first-phase delivery. Advanced category-theory path composition, rule validation, view mappings, and natural-language explanations are reserved for the second phase.
+=======
+#有关系 GraphBoard
+
+
+本产品是一款以“对象卡片、关系连线、阵营分组和多视角切换”为核心的本地可视化关系图谱白板。可以扩展到组织协作、故事人物、学术谱系、供应链、知识图谱、软件依赖和工作流程等领域。
+
+产品的核心价值不是“能够画图”，而是让用户以接近整理照片的低操作成本和低精力，快速建立、修改和理解复杂关系。
+
+用户操作步骤：
+
+1. 批量导入头像或图片；
+2. 将对象拖入不同阵营；
+3. 通过一次拖动建立关系；
+4. 修改关系类型和连接目标；
+5. 保存、重新打开并导出关系图。
+
+
+实现以下功能：
+- 从图片文件夹批量建立人物卡片；
+- 快速添加多条同类型关系；
+- 调整人物阵营和位置；
+- 查看某个人物的直接及间接关系；
+- 导出用于汇报、社交媒体或设计继续加工的图片。
+
+- ## 6. 通用概念模型
+
+### 6.1 对象卡片 Object Card
+
+圆形对象卡片代表人物、公司、概念、软件模块、流程状态或其他实体，三角形对象卡片代表附属的作品、事件、项目、连接彼此关系的中介。
+
+### 6.2 关系 Relationship
+
+关系连接两个对象，也可以在后续版本连接分组或其他关系。
+
+基础字段：
+
+- 起点对象；
+- 终点对象；
+- 关系类型；
+- 有向、无向或双向；
+- 颜色、粗细和线型；
+- 显示名称；
+- 起止锚点；
+- 路径控制点；
+- 备注和自定义属性。
+
+### 6.3 分组 Group
+
+分组代表阵营、部门、小队、章节、系统边界或分类。
+
+基础字段：名称、颜色、边界、成员、折叠状态和布局方式。
+
+### 6.4 注释 Annotation
+
+注释包括自由文本、便签和说明箭头。注释默认不参与路径分析。
+
+### 6.5 视图 View
+
+视图保存筛选条件、对象位置、缩放状态和可见关系。
+
